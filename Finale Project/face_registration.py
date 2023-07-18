@@ -44,10 +44,33 @@ while True:
   for(x, y, w, h) in faces:
     cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
   
-  #Encode the face region of internet (ROI) using face
-  rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-  face_encodings = face_recognition.face_encodings(rgb_frame,[(y, x+w, y+h, x)])
+    #Encode the face region of interest (ROI) using face_recognition library
+    face_encodings = face_recognition.face_encodings(rgb_frame,[(y, x+w, y+h, x)])
   
-  #Store the face region of interest
-  for face_encoding in face_encodings:
-     face_data.append({"name": name, "face": frame[y:y+h, x:x+w], "face_encoding": face_encoding, "access": access_list})
+    #Store the face region of interest (ROI), face encoding, and room access as a dictionary with the name
+    for face_encoding in face_encodings:
+       face_data.append({"name": name, "face": frame[y:y+h, x:x+w], "face_encoding": face_encoding, "access": access_list})
+
+  #Display the resulting frame
+  cv2.imshow("Register Frame", frame)
+
+  #Wait for the 's' key to be pressed to capture a face
+  if cv2.waitkey(1) & 0xFF == ord("s"):
+    capture_count += 1
+    print(f"Capture {capture_count} complete!")
+  
+  #Check if the maximum number of captures (5) has been reached
+  if capture_count >= 5:
+    break
+
+#Release the video capture and close the OpenCV windows
+cap.release()
+cv2.destroyAllWindows()
+
+#Save the face data to a pickle file
+now = datetime.now()
+file_name = f"faces/{now.strftime('%Y-%m-%d-%H-%M-%S')}-{name}.pickle"
+with open(file_name, "wb") as f:
+  pickle.dump(face_data, f)
+print(f"face data for '{name}' saved successfully!")
+
