@@ -1,5 +1,5 @@
 import cv2
-import face_recogntion
+import face_recognition 
 import pickle
 from datetime import datetime
 
@@ -28,7 +28,7 @@ access_list = access_input.split(',')
 face_data = []
 
 #Counter for the number of face captures
-captures_count = 0
+capture_count = 0
 
 while True:
   #Capture frame-by-frame
@@ -45,6 +45,7 @@ while True:
     cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
   
     #Encode the face region of interest (ROI) using face_recognition library
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     face_encodings = face_recognition.face_encodings(rgb_frame,[(y, x+w, y+h, x)])
   
     #Store the face region of interest (ROI), face encoding, and room access as a dictionary with the name
@@ -55,7 +56,7 @@ while True:
   cv2.imshow("Register Frame", frame)
 
   #Wait for the 's' key to be pressed to capture a face
-  if cv2.waitkey(1) & 0xFF == ord("s"):
+  if cv2.waitKey(1) & 0xFF == ord("s"):
     capture_count += 1
     print(f"Capture {capture_count} complete!")
   
@@ -69,7 +70,7 @@ cv2.destroyAllWindows()
 
 #Save the face data to a pickle file
 now = datetime.now()
-file_name = f"faces/{now.strftime('%Y-%m-%d-%H-%M-%S')}-{name}.pickle"
+file_name = f"face/{now.strftime('%Y-%m-%d-%H-%M-%S')}-{name}.pickle"
 with open(file_name, "wb") as f:
   pickle.dump(face_data, f)
 print(f"face data for '{name}' saved successfully!")
